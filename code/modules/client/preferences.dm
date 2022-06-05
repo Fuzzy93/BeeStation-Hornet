@@ -67,6 +67,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	//character preferences
 	var/real_name						//our character's name
+	var/examine_text                     // the flavor text of our character
 	var/be_random_name = 0				//whether we'll have a random name every round
 	var/be_random_body = 0				//whether we'll have a random body every round
 	var/gender = MALE					//gender of character (well duh)
@@ -239,6 +240,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			dat += "<b>Name:</b> "
 			dat += "<a href='?_src_=prefs;preference=name;task=input'>[real_name]</a><BR>"
+
+			dat += "<b>Flavor Text:</b> "
+			dat += "<a href='?_src_=prefs;preference=examine_text;task=input'>[examine_text ? examine_text : "(none)"]</a><BR>"
 
 			if(!(AGENDER in pref_species.species_traits))
 				dat += "<b>Gender:</b> <a href='?_src_=prefs;preference=gender'>[gender == MALE ? "Male" : "Female"]</a><BR>"
@@ -1341,6 +1345,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			switch(href_list["preference"])
 				if("name")
 					real_name = pref_species.random_name(gender,1)
+				if("examine_text")
+					examine_text = null
 				if("age")
 					age = rand(AGE_MIN, AGE_MAX)
 				if("hair_color")
@@ -1416,6 +1422,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						real_name = new_name
 					else
 						to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, -, ' and .</font>")
+
+				if("examine_text")
+					var/new_text = input(user, "Please enter new flavor text (appears whenever you are examined):", "Character Preference") as text|null
+					if(!new_text)
+						return
+					if(length(new_text) > FLAVOR_CHAR_LIMIT)
+						alert("Your flavor text is too long. It must be no more than [FLAVOR_CHAR_LIMIT] characters long. The current text will be trimmed down to meet the limit.")
+						new_text = copytext(new_text, 1, FLAVOR_CHAR_LIMIT+1)
+					new_text = html_encode(new_text)
+					examine_text =	say_emphasis(new_text)
 
 				if("age")
 					var/new_age = input(user, "Choose your character's age:\n([AGE_MIN]-[AGE_MAX])", "Character Preference") as num|null
@@ -2037,6 +2053,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	character.real_name = real_name
 	character.name = character.real_name
+	character.examine_text = examine_text
 
 	character.gender = gender
 	character.age = age

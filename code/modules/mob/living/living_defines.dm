@@ -135,3 +135,6 @@
 	//is mob player controllable
 	var/playable = FALSE
 	var/flavor_text = FLAVOR_TEXT_NONE
+
+	// Test viisble on-examine
+	var/examine_text = null

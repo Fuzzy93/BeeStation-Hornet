@@ -22,6 +22,11 @@
 		apparent_species = ", \an [dna.species.name]"
 	. = list("<span class='info'>*---------*\nThis is <EM>[!obscure_name ? name : "Unknown"][apparent_species]</EM>!")
 
+	if(flavor_text && !obscure_name && (real_name == name))
+		. += "[examine_text]\n"
+	else
+		. += "<span class ='notice'>>*---------*</span>"
+
 	//uniform
 	if(w_uniform && !(obscured & ITEM_SLOT_ICLOTHING))
 		//accessory
